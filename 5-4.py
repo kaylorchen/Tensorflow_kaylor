@@ -3,13 +3,16 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 from tensorflow.contrib.tensorboard.plugins import projector
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #载入数据集
 mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
 #运行次数
 max_steps = 1001
 #图片数量
-image_num = 3000
+image_num = 5000
 #文件路径
 DIR = "./"
 

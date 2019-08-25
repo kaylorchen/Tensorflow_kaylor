@@ -1,12 +1,18 @@
 #卷积神经网络
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
 
 #每个批次的大小
 batch_size = 100
 #计算一共有多少个批次
 n_batch = mnist.train.num_examples // batch_size
+
+print("starting...")
 
 #参数概要
 def variable_summaries(var):
@@ -112,7 +118,11 @@ with tf.name_scope('accuracy'):
 
 merged = tf.summary.merge_all()
 
-with tf.Session() as sess:
+config = tf.ConfigProto()
+# config.gpu_options.per_process_gpu_memory_fraction = 0.5  # 程序最多只能占用指定gpu50%的显存
+config.gpu_options.allow_growth = True      #程序按需申请内存
+
+with tf.Session(config= config) as sess:
     sess.run(tf.global_variables_initializer())
     train_writer = tf.summary.FileWriter('log/train',sess.graph)
     test_writer = tf.summary.FileWriter('log/test', sess.graph)
@@ -127,9 +137,10 @@ with tf.Session() as sess:
         test_writer.add_summary(summary, i)
 
         if i%100==0:
-            test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images, y:mnist.test.labels, keep_prob: 1.0})
-            train_acc = sess.run(accuracy, feed_dict={x: mnist.train.images[:10000], y: mnist.train.labels[:10000], keep_prob: 1.0})
+            test_acc = sess.run(accuracy, feed_dict={x:mnist.test.images[:1000], y:mnist.test.labels[:1000], keep_prob: 1.0})
+            train_acc = sess.run(accuracy, feed_dict={x: mnist.train.images[:1000], y: mnist.train.labels[:1000], keep_prob: 1.0})
             print("Iter " + str(i) + " ,testing acc= " + str(test_acc) + ", training acc= " + str(train_acc))
+
 
 
 
